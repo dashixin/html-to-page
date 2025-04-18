@@ -1,477 +1,59 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java命名规范 - 知识卡片</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>我的Vercel演示</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap');
-        
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: #f7f7f7;
-            padding: 2rem;
-        }
-        
-        .card-container {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            max-height: 383px;
-        }
-        
-        .card {
-            width: 48%;
-            height: 383px;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .card-content {
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
         }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        .container {
+            max-width: 800px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        
-        .paper-texture {
-            background-color: #f8f5e6;
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d0cbb5' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        h1 {
+            color: #333;
         }
-        
-        .handwritten {
-            font-family: 'Ma Shan Zheng', cursive;
+        p {
+            color: #666;
+            margin-bottom: 20px;
         }
-        
-        .kuaile {
-            font-family: 'ZCOOL KuaiLe', cursive;
-        }
-        
-        .xiaowei {
-            font-family: 'ZCOOL XiaoWei', serif;
-        }
-        
-        .huangyou {
-            font-family: 'ZCOOL QingKe HuangYou', cursive;
-        }
-        
-        .neon-text {
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6, 0 0 25px #0073e6;
-            color: #fff;
-        }
-        
-        .vintage-bg {
-            background-color: #e2d3b8;
-            background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23a89878' fill-opacity='0.15'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        
-        .dash-border {
-            border: 3px dashed #3b82f6;
-        }
-        
-        .code-bg {
-            background-color: #1e293b;
-        }
-        
-        .geometric-pattern {
-            background-color: #ffffff;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23a4a4a4' fill-opacity='0.1'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        
-        .highlight-text {
-            background: linear-gradient(180deg, rgba(255,255,255,0) 65%, rgba(255, 236, 97, 0.7) 65%);
-            display: inline;
-        }
-        
-        .polaroid {
-            background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-            transform: rotate(-1deg);
-        }
-        
-        .markdown-bg {
-            background-color: #0d1117;
-        }
-        
-        .marker {
-            position: relative;
-        }
-        
-        .marker::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 0.7em;
-            background-color: rgba(252, 211, 77, 0.5);
-            z-index: -1;
-            transform: rotate(-2deg);
-        }
-        
-        .tag {
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background-color: rgba(79, 70, 229, 0.1);
-            color: #4f46e5;
-            margin-right: 0.5rem;
-            white-space: nowrap;
-        }
-        
-        .neo-brutalism {
-            border: 3px solid #000;
-            box-shadow: 5px 5px 0 #000;
-        }
-
-        .circuit-pattern {
-            background-color: #0f172a;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 304 304' width='304' height='304'%3E%3Cpath fill='%23334155' fill-opacity='0.4' d='M44.1 224a5 5 0 1 1 0 2H0v-2h44.1zm160 48a5 5 0 1 1 0 2H82v-2h122.1zm57.8-46a5 5 0 1 1 0-2H304v2h-42.1zm0 16a5 5 0 1 1 0-2H304v2h-42.1zm6.2-114a5 5 0 1 1 0 2h-86.2a5 5 0 1 1 0-2h86.2zm-256-48a5 5 0 1 1 0 2H0v-2h12.1zm185.8 34a5 5 0 1 1 0-2h86.2a5 5 0 1 1 0 2h-86.2zM258 12.1a5 5 0 1 1-2 0V0h2v12.1zm-64 208a5 5 0 1 1-2 0v-54.2a5 5 0 1 1 2 0v54.2zm48-198.2V80h62v2h-64V21.9a5 5 0 1 1 2 0zm16 16V64h46v2h-48V37.9a5 5 0 1 1 2 0zm-128 96V208h16v12.1a5 5 0 1 1-2 0V210h-16v-76.1a5 5 0 1 1 2 0zm-5.9-21.9a5 5 0 1 1 0 2H114v48H85.9a5 5 0 1 1 0-2H112v-48h12.1zm-6.2 130a5 5 0 1 1 0-2H176v-74.1a5 5 0 1 1 2 0V242h-60.1zm-16-64a5 5 0 1 1 0-2H114v48h10.1a5 5 0 1 1 0 2H112v-48h-10.1zM66 284.1a5 5 0 1 1-2 0V274H50v30h-2v-32h18v12.1zM236.1 176a5 5 0 1 1 0 2H226v94h48v32h-2v-30h-48v-98h12.1zm25.8-30a5 5 0 1 1 0-2H274v44.1a5 5 0 1 1-2 0V146h-10.1zm-64 96a5 5 0 1 1 0-2H208v-80h16v-14h-42.1a5 5 0 1 1 0-2H226v18h-16v80h-12.1zm86.2-210a5 5 0 1 1 0 2H272V0h2v32h10.1zM98 101.9V146H53.9a5 5 0 1 1 0-2H96v-42.1a5 5 0 1 1 2 0zM53.9 34a5 5 0 1 1 0-2H80V0h2v34H53.9zm60.1 3.9V66H82v64H69.9a5 5 0 1 1 0-2H80V64h32V37.9a5 5 0 1 1 2 0zM101.9 82a5 5 0 1 1 0-2H128V37.9a5 5 0 1 1 2 0V82h-28.1zm16-64a5 5 0 1 1 0-2H146v44.1a5 5 0 1 1-2 0V18h-26.1zm102.2 270a5 5 0 1 1 0 2H98v14h-2v-16h124.1zM242 149.9V160h16v34h-16v62h48v48h-2v-46h-48v-66h16v-30h-16v-12.1a5 5 0 1 1 2 0zM53.9 18a5 5 0 1 1 0-2H64V2H48V0h18v18H53.9zm112 32a5 5 0 1 1 0-2H192V0h50v2h-48v48h-28.1zm-48-48a5 5 0 0 1-9.8-2h2.07a3 3 0 1 0 5.66 0H178v34h-18V21.9a5 5 0 1 1 2 0V32h14V2h-58.1zm0 96a5 5 0 1 1 0-2H137l32-32h39V21.9a5 5 0 1 1 2 0V66h-40.17l-32 32H117.9zm28.1 90.1a5 5 0 1 1-2 0v-76.51L175.59 80H224V21.9a5 5 0 1 1 2 0V82h-49.59L146 112.41v75.69zm16 32a5 5 0 1 1-2 0v-99.51L184.59 96H300.1a5 5 0 0 1 3.9-3.9v2.07a3 3 0 0 0 0 5.66v2.07a5 5 0 0 1-3.9-3.9H185.41L162 121.41v98.69zm-144-64a5 5 0 1 1-2 0v-3.51l48-48V48h32V0h2v50H66v55.41l-48 48v2.69zM50 53.9v43.51l-48 48V208h26.1a5 5 0 1 1 0 2H0v-65.41l48-48V53.9a5 5 0 1 1 2 0zm-16 16V89.41l-34 34v-2.82l32-32V69.9a5 5 0 1 1 2 0zM12.1 32a5 5 0 1 1 0 2H9.41L0 43.41V40.6L8.59 32h3.51zm265.8 18a5 5 0 1 1 0-2h18.69l7.41-7.41v2.82L297.41 50H277.9zm-16 160a5 5 0 1 1 0-2H288v-71.41l16-16v2.82l-14 14V210h-28.1zm-208 32a5 5 0 1 1 0-2H64v-22.59L40.59 194H21.9a5 5 0 1 1 0-2H41.41L66 217.59V242H53.9zm150.2 14a5 5 0 1 1 0 2H96v-56.6L56.6 162H37.9a5 5 0 1 1 0-2h19.5L98 200.6V256h106.1zm-150.2 2a5 5 0 1 1 0-2H80v-46.59L48.59 178H21.9a5 5 0 1 1 0-2H49.41L82 208.59V258H53.9zM34 39.8v1.61L9.41 66H0v-2h8.59L32 40.59V0h2v39.8zM2 300.1a5 5 0 0 1 3.9 3.9H3.83A3 3 0 0 0 0 302.17V256h18v48h-2v-46H2v42.1zM34 241v63h-2v-62H0v-2h34v1zM17 18H0v-2h16V0h2v18h-1zm273-2h14v2h-16V0h2v16zm-32 273v15h-2v-14h-14v14h-2v-16h18v1zM0 92.1A5.02 5.02 0 0 1 6 97a5 5 0 0 1-6 4.9v-2.07a3 3 0 1 0 0-5.66V92.1zM80 272h2v32h-2v-32zm37.9 32h-2.07a3 3 0 0 0-5.66 0h-2.07a5 5 0 0 1 9.8 0zM5.9 0A5.02 5.02 0 0 1 0 5.9V3.83A3 3 0 0 0 3.83 0H5.9zm294.2 0h2.07A3 3 0 0 0 304 3.83V5.9a5 5 0 0 1-3.9-5.9zm3.9 300.1v2.07a3 3 0 0 0-1.83 1.83h-2.07a5 5 0 0 1 3.9-3.9zM97 100a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-48 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 96a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-144a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm96 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM49 36a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-32 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM33 68a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 240a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm80-176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 48a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm112 176a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-16 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 180a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0-32a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 84a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm32 64a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm16-16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'%3E%3C/path%3E%3C/svg%3E");
+        .success {
+            color: #28a745;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="container mx-auto">
-        <h1 class="text-3xl font-bold text-center mb-8">Java命名规范 - 知识卡片</h1>
-        
-        <!-- 金句1：标题与主旨 -->
-        <div class="card-container">
-            <!-- 卡片1：渐变风格 -->
-            <div class="card gradient-bg shadow-lg">
-                <div class="card-content">
-                    <div class="text-yellow-300 text-xs uppercase tracking-wide font-bold mb-2">Java代码质量必备</div>
-                    <h2 class="text-white text-4xl font-bold mb-4">代码质量翻倍的秘密：</h2>
-                    <h3 class="text-yellow-300 text-3xl font-bold mb-4">90%开发者忽略的命名规范</h3>
-                    <p class="text-white text-lg">良好的命名规范是高质量Java代码的基础，却常被忽视。它不仅提高了代码可读性，更能降低维护成本，避免潜在bug。</p>
-                    <div class="mt-auto pt-4 flex items-center">
-                        <div class="bg-white bg-opacity-20 p-2 rounded-full mr-2">
-                            <i class="fas fa-code text-yellow-300"></i>
-                        </div>
-                        <p class="text-yellow-100 text-sm">面试官最关注的代码细节之一</p>
-						                        <div class="bg-white bg-opacity-20 p-2 rounded-full mr-2">
-                            <i class="fas fa-code text-yellow-300"></i>
-                        </div>
-                        <p class="text-yellow-100 text-sm">面试官最关注的代码细节之一</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 卡片2：纸质模拟风格 -->
-            <div class="card paper-texture shadow-md neo-brutalism">
-                <div class="card-content">
-                    <div class="flex mb-2">
-                        <span class="tag">Java编程规范</span>
-                        <span class="tag bg-red-100 text-red-600">职场必备</span>
-                    </div>
-                    <h2 class="text-gray-800 font-black text-3xl handwritten">命名规范：代码质量的第一道防线</h2>
-                    <p class="mt-4 text-gray-700">在代码评审中，<span class="marker">超过90%的问题都与命名有关</span>。糟糕的命名是技术债务的主要来源，直接影响团队的开发效率。</p>
-                    <div class="flex items-center mt-6">
-                        <div class="w-10 h-10 flex items-center justify-center bg-amber-100 rounded-full text-amber-600">
-                            <i class="fas fa-lightbulb"></i>
-                        </div>
-                        <p class="ml-3 text-gray-600">为什么Google和阿里巴巴都将命名规范放在编码标准首位？</p>
-                    </div>
-                    <div class="mt-4 text-xs text-gray-500 border-t border-gray-200 pt-2">
-                        <i class="fas fa-quote-left text-amber-400 mr-1"></i> 命名就是文档，是代码质量的第一道防线
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 金句2：类命名规范 -->
-        <div class="card-container">
-            <!-- 卡片3：数字界面风 -->
-            <div class="card markdown-bg shadow-lg">
-                <div class="card-content">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="bg-gray-800 px-3 py-1 rounded-md text-green-400 text-sm font-mono">Java > 类命名</div>
-                        <div class="text-gray-400 text-xs">最佳实践指南</div>
-                    </div>
-                    <h2 class="text-white text-2xl font-bold mb-3">类与接口命名规范对照表</h2>
-                    <div class="bg-gray-800 p-3 rounded-md my-3">
-                        <table class="text-sm text-left text-gray-300 w-full">
-                            <tr class="border-b border-gray-700">
-                                <th class="py-2 text-green-400">类型</th>
-                                <th class="py-2 text-green-400">命名模式</th>
-                                <th class="py-2 text-green-400">示例</th>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="py-2">普通类</td>
-                                <td class="py-2">PascalCase名词</td>
-                                <td class="py-2"><code class="text-yellow-300">OrderProcessor</code></td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="py-2">接口</td>
-                                <td class="py-2">能力描述</td>
-                                <td class="py-2"><code class="text-yellow-300">Runnable</code></td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="py-2">抽象类</td>
-                                <td class="py-2">Abstract+名词</td>
-                                <td class="py-2"><code class="text-yellow-300">AbstractList</code></td>
-                            </tr>
-                        </table>
-                    </div>
-                    <p class="text-gray-300 text-sm mt-2">现代Java不推荐接口使用"I"前缀命名模式</p>
-                    <div class="flex items-center mt-2 text-yellow-300 text-sm">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        <span>类名应表达"是什么"而非"做什么"</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 卡片4：几何图形风格 -->
-            <div class="card geometric-pattern shadow-lg">
-                <div class="card-content">
-                    <div class="text-blue-600 font-medium text-xs tracking-wider mb-2">类命名最佳实践</div>
-                    <h2 class="text-gray-800 text-3xl font-bold mb-4">类名常见错误与修正</h2>
-                    <div class="space-y-3">
-                        <div class="flex items-center p-2 bg-white rounded-md shadow-sm">
-                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-500 mr-3 flex-shrink-0">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div>
-                                <div class="text-red-500 font-medium">ProcessOrders</div>
-                                <div class="text-gray-500 text-sm">动词开头，像方法而非类</div>
-                            </div>
-                            <div class="ml-auto text-green-500 font-medium">OrderProcessor</div>
-                        </div>
-                        <div class="flex items-center p-2 bg-white rounded-md shadow-sm">
-                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-500 mr-3 flex-shrink-0">
-                                <i class="fas fa-times"></i>
-                            </div>
-                            <div>
-                                <div class="text-red-500 font-medium">DAO</div>
-                                <div class="text-gray-500 text-sm">缩写不明确，技术实现泄露</div>
-                            </div>
-                            <div class="ml-auto text-green-500 font-medium">CustomerRepository</div>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 p-2 rounded-md text-blue-700 text-sm mt-4">
-                        <i class="fas fa-lightbulb text-blue-500 mr-1"></i>
-                        命名应抽象意图而非实现细节，以增强代码灵活性
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 金句3：方法命名规范 -->
-        <div class="card-container">
-            <!-- 卡片5：霓虹风格 -->
-            <div class="card circuit-pattern shadow-lg">
-                <div class="card-content">
-                    <div class="text-blue-300 text-xs mb-2 tracking-wider">JAVA METHOD NAMING</div>
-                    <h2 class="neon-text text-3xl font-bold mb-4 huangyou">方法命名的艺术</h2>
-                    <p class="text-blue-100 mb-4">一个好的方法名应清晰表达其功能、返回值和副作用</p>
-                    <div class="bg-white bg-opacity-10 p-3 rounded-lg space-y-2">
-                        <div class="text-white">
-                            <span class="text-blue-300">获取型:</span> 
-                            <span class="text-yellow-300">get</span>User(), 
-                            <span class="text-yellow-300">fetch</span>Details()
-                        </div>
-                        <div class="text-white">
-                            <span class="text-blue-300">查询型:</span> 
-                            <span class="text-yellow-300">find</span>ById(), 
-                            <span class="text-yellow-300">search</span>ByName()
-                        </div>
-                        <div class="text-white">
-                            <span class="text-blue-300">判断型:</span> 
-                            <span class="text-yellow-300">is</span>Valid(), 
-                            <span class="text-yellow-300">has</span>Permission()
-                        </div>
-                    </div>
-                    <div class="mt-4 text-blue-300 flex items-center">
-                        <i class="fas fa-exclamation-circle text-yellow-400 mr-2"></i>
-                        <span>get前缀表示一定能返回结果，find表示可能返回null</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 卡片6：复古风格 -->
-            <div class="card vintage-bg shadow-lg">
-                <div class="card-content">
-                    <div class="text-amber-800 text-xs tracking-wider font-medium mb-2">方法命名反面教材</div>
-                    <h2 class="text-amber-900 text-3xl font-bold mb-3 xiaowei">危险的方法命名</h2>
-                    <div class="bg-amber-50 bg-opacity-60 p-3 rounded-md mb-4">
-                        <p class="text-amber-900 font-medium">常见方法命名错误：</p>
-                        <ul class="space-y-2 mt-2">
-                            <li class="flex items-start">
-                                <i class="fas fa-times-circle text-red-500 mt-1 mr-2"></i>
-                                <span class="text-amber-800"><code>process()</code> - 过于宽泛，不表达意图</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-times-circle text-red-500 mt-1 mr-2"></i>
-                                <span class="text-amber-800"><code>getData()</code> - 不明确获取什么数据</span>
-                            </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-times-circle text-red-500 mt-1 mr-2"></i>
-                                <span class="text-amber-800"><code>check()</code> - 不清楚检查什么，返回什么</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="flex items-center text-amber-800">
-                        <i class="fas fa-quote-left text-amber-600 mr-2"></i>
-                        <span class="text-sm italic">方法名误导性可能导致严重bug，如名为check却修改数据</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 金句4：变量命名规范 -->
-        <div class="card-container">
-            <!-- 卡片7：信息图表风 -->
-            <div class="card grid-pattern shadow-lg">
-                <div class="card-content">
-                    <div class="text-blue-600 font-medium uppercase text-xs tracking-wider mb-2">变量命名规则</div>
-                    <h2 class="text-gray-800 text-2xl font-black mb-4">变量类型与命名规则</h2>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-center p-2 bg-white rounded-md shadow-sm">
-                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 mr-3 flex-shrink-0">
-                                <span class="font-bold">1</span>
-                            </div>
-                            <div class="text-gray-700">
-                                <span class="font-bold">局部变量:</span> camelCase
-                                <span class="text-sm text-gray-500 block">orderCount, userName</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center p-2 bg-white rounded-md shadow-sm">
-                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mr-3 flex-shrink-0">
-                                <span class="font-bold">2</span>
-                            </div>
-                            <div class="text-gray-700">
-                                <span class="font-bold">常量:</span> UPPER_SNAKE_CASE
-                                <span class="text-sm text-gray-500 block">MAX_RETRY_COUNT, DEFAULT_TIMEOUT</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center p-2 bg-white rounded-md shadow-sm">
-                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 mr-3 flex-shrink-0">
-                                <span class="font-bold">3</span>
-                            </div>
-                            <div class="text-gray-700">
-                                <span class="font-bold">集合变量:</span> 使用复数名词
-                                <span class="text-sm text-gray-500 block">List&lt;User&gt; users (而非 userList)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 p-2 rounded-md text-blue-700 text-sm">
-                        <i class="fas fa-lightbulb text-blue-500 mr-1"></i>
-                        只有真正不变的静态final值才应使用全大写命名
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 卡片8：手绘风格 -->
-            <div class="card bg-blue-50 shadow-lg dash-border">
-                <div class="card-content">
-                    <div class="text-blue-500 text-sm font-medium mb-2">集合命名技巧</div>
-                    <h2 class="text-blue-800 text-3xl font-bold mb-3 kuaile">集合变量命名<br>最佳实践</h2>
-                    <div class="space-y-3 mb-4">
-                        <div class="bg-white p-2 rounded-lg border-l-4 border-blue-400">
-                            <span class="text-blue-600 font-bold">List/数组:</span>
-                            <span class="text-blue-800">使用复数名词 - <code>users</code></span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg border-l-4 border-blue-400">
-                            <span class="text-blue-600 font-bold">Map:</span>
-                            <span class="text-blue-800">复数名词+By+键特性 - <code>usersByName</code></span>
-                        </div>
-                        <div class="bg-white p-2 rounded-lg border-l-4 border-blue-400">
-                            <span class="text-blue-600 font-bold">Set:</span>
-                            <span class="text-blue-800">独特性+复数名词 - <code>uniqueNames</code></span>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <p class="ml-3 text-blue-700 text-sm">避免在名称中包含类型信息，如<s>userList</s></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 金句5：审查与工具 -->
-        <div class="card-container">
-            <!-- 卡片9：涂鸦标记风格 -->
-            <div class="card bg-white shadow-lg">
-                <div class="card-content">
-                    <div class="text-gray-600 text-sm font-medium mb-2">代码质量控制</div>
-                    <h2 class="text-gray-800 text-3xl font-bold mb-3">命名规范<span class="highlight-text">审查清单</span></h2>
-                    <div class="space-y-3 mb-4">
-                        <div class="flex items-start">
-                            <div class="text-green-500 mr-2 mt-1">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div>
-                                <p class="text-gray-800 font-medium">命名描述性</p>
-                                <p class="text-gray-600 text-sm">阅读名称就能理解其作用，无需查看实现</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="text-green-500 mr-2 mt-1">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div>
-                                <p class="text-gray-800 font-medium">命名一致性</p>
-                                <p class="text-gray-600 text-sm">相似功能使用相似命名模式</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <div class="text-green-500 mr-2 mt-1">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div>
-                                <p class="text-gray-800 font-medium">避免误导</p>
-                                <p class="text-gray-600 text-sm">名称准确反映变量内容和方法行为</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                        <p class="text-yellow-800 text-sm">
-                            <i class="fas fa-lightbulb text-yellow-600 mr-1"></i>
-                            在代码评审中，命名问题应被视为重要问题，而非仅仅是风格问题
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 卡片10：现代渐变风格 -->
-            <div class="card bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg">
-                <div class="card-content">
-                    <div class="text-white text-sm uppercase tracking-widest font-light mb-1">自动化工具</div>
-                    <h2 class="text-white font-black text-3xl mb-4">命名规范自动化检查</h2>
-                    <div class="bg-white bg-opacity-20 p-3 rounded-lg mb-4">
-                        <ul class="text-white text-sm space-y-2">
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle mr-2 text-green-300"></i>
-                                <span><b>CheckStyle:</b> 强制命名约定</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle mr-2 text-green-300"></i>
-                                <span><b>SonarQube:</b> 全面代码质量检查</span>
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check-circle mr-2 text-green-300"></i>
-                                <span><b>IntelliJ IDEA:</b> 实时命名规范提示</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <p class="text-white text-opacity-90">
-                        自动化工具不仅能在CI/CD流程中检查命名问题，还能在开发人员编写代码时提供即时反馈，大大提高代码质量。
-                    </p>
-                    <div class="text-xs text-white text-opacity-80 mt-3">
-                        将命名规范集成到自动化工具中，确保团队一致性执行
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="container">
+        <h1>我的Vercel部署演示</h1>
+        <p>这是一个通过GitHub部署到Vercel的简单演示项目</p>
+        <p class="success">恭喜！如果您看到此页面，说明部署已成功！</p>
+        <p>当前时间：<span id="current-time"></span></p>
     </div>
+    <script>
+        // 显示当前时间
+        function updateTime() {
+            const timeElement = document.getElementById('current-time');
+            timeElement.textContent = new Date().toLocaleString();
+        }
+        
+        // 页面加载时更新时间，并每秒更新一次
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
 </body>
 </html>
