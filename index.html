@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>技术小馆 · 3D知识星球</title>
   <style>
     html, body { height: 100%; margin: 0; padding: 0; }
@@ -22,30 +23,159 @@
     }
     .reset-btn {
       position: fixed;
-      right: 30px; top: 30px;
+      right: 20px; top: 20px;
       z-index: 100;
       background: #1976d2;
       color: #fff;
       border: none;
       border-radius: 20px;
-      padding: 10px 22px;
-      font-size: 1em;
+      padding: 8px 16px;
+      font-size: 0.9em;
       cursor: pointer;
       opacity: 0.85;
     }
     .reset-btn:hover { opacity: 1; }
+    
+    /* 加载指示器样式 */
+    .loading {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #23243a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 1.2em;
+      z-index: 1000;
+    }
+    .loading-spinner {
+      width: 50px; height: 50px;
+      border: 5px solid rgba(255,255,255,0.2);
+      border-top-color: #1976d2;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* 触摸指引样式 */
+    .touch-instructions {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9em;
+      padding: 10px;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* 信息面板动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    #category-info {
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* 移动端适配样式 */
+    @media (max-width: 768px) {
+      .tooltip {
+        font-size: 0.9em;
+        padding: 8px 14px;
+        max-width: 260px;
+      }
+      .reset-btn {
+        right: 15px;
+        top: 15px;
+        padding: 6px 12px;
+        font-size: 0.8em;
+      }
+      .loading-spinner {
+        width: 40px; height: 40px;
+        border-width: 4px;
+      }
+      .touch-instructions {
+        opacity: 1;
+        font-size: 0.8em;
+        bottom: 15px;
+      }
+      #category-info {
+        left: 50% !important;
+        transform: translateX(-50%);
+        max-width: 85% !important;
+        font-size: 0.9em;
+        top: 60px;
+      }
+    }
   </style>
 </head>
 <body>
+<div class="loading" id="loading">
+  <div class="loading-spinner"></div>
+  <div>加载中...</div>
+</div>
 <div id="container"></div>
 <button class="reset-btn" onclick="resetView()">重置视角</button>
 <div class="tooltip" id="tooltip"></div>
+<div class="touch-instructions" id="touch-instructions">单指拖动旋转 · 双指缩放</div>
 
 <!-- 使用降级版本的three.js，确保OrbitControls路径正确 -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js"></script>
 
+<!-- 添加性能监控工具 -->
 <script>
+// 性能监控函数
+class PerformanceMonitor {
+  constructor() {
+    this.fpsCounter = document.createElement('div');
+    this.fpsCounter.style.position = 'fixed';
+    this.fpsCounter.style.left = '10px';
+    this.fpsCounter.style.bottom = '10px';
+    this.fpsCounter.style.color = 'rgba(255,255,255,0.5)';
+    this.fpsCounter.style.fontSize = '10px';
+    this.fpsCounter.style.fontFamily = 'monospace';
+    this.fpsCounter.style.zIndex = '1000';
+    this.fpsCounter.style.display = 'none'; // 默认隐藏
+    document.body.appendChild(this.fpsCounter);
+    
+    this.frames = 0;
+    this.lastTime = performance.now();
+    this.fps = 0;
+    
+    // 仅在开发模式显示
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      this.fpsCounter.style.display = 'block';
+    }
+  }
+  
+  update() {
+    this.frames++;
+    const now = performance.now();
+    const delta = now - this.lastTime;
+    
+    if (delta >= 1000) {
+      this.fps = Math.round((this.frames * 1000) / delta);
+      this.fpsCounter.textContent = `FPS: ${this.fps}`;
+      this.frames = 0;
+      this.lastTime = now;
+    }
+    
+    return this.fps;
+  }
+}
+
 // 技术小馆分类数据
 const categories = [
   // 主分类
@@ -154,21 +284,32 @@ const container = document.getElementById('container');
 const tooltip = document.getElementById('tooltip');
 let camera, scene, renderer, controls, sphere, bubbleMeshes = [];
 
-init();
-animate();
+// 初始化时通过DOMContentLoaded事件调用
+// init();
+// animate();
 
 function init() {
   console.log("正在初始化场景...");
   
+  // 检测是否为移动设备
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  // 初始化性能监视器
+  perfMonitor = new PerformanceMonitor();
+  
   // 初始化场景
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 400);
+  camera.position.set(0, 0, isMobile ? 450 : 400); // 移动端稍微远一点
 
   // 初始化渲染器
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({ 
+    antialias: !isMobile, // 移动端关闭抗锯齿提高性能
+    alpha: true
+  });
   renderer.setClearColor(0x111122, 1); // 更深的背景色，接近黑色
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio); // 限制移动端像素比
   container.appendChild(renderer.domElement);
 
   // 添加光源
@@ -199,20 +340,39 @@ function init() {
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.enablePan = false;
-  controls.minDistance = 200;
-  controls.maxDistance = 600;
+  controls.minDistance = isMobile ? 180 : 200;
+  controls.maxDistance = isMobile ? 500 : 600;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.3; // 更慢的旋转速度
+  controls.zoomSpeed = isMobile ? 0.6 : 1.0; // 移动端减慢缩放速度提高控制性
 
   // 添加事件监听
   window.addEventListener('resize', onWindowResize, false);
   renderer.domElement.addEventListener('pointermove', onPointerMove);
   renderer.domElement.addEventListener('pointerdown', onPointerDown);
   
+  // 添加移动端特定的触摸事件
+  if (isMobile) {
+    document.getElementById('touch-instructions').style.opacity = 1;
+    
+    // 添加双指缩放检测
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+  }
+  
+  // 完成初始化后隐藏加载指示器
+  hideLoading();
+  
   console.log("场景初始化完成");
+  
+  // 开始动画循环
+  animate();
 }
 
 function createBubbles() {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
   const N = bubbles.length;
   for (let i = 0; i < N; i++) {
     // 使用改进的分布算法，让节点更分散
@@ -221,13 +381,22 @@ function createBubbles() {
     
     // 根据用户数据调整节点大小和位置
     const size = bubbles[i].size || 10;
+    const mobileScale = isMobile ? 0.7 : 1; // 移动端节点尺寸缩小
     const r = 150 + Math.random() * 50; // 更大范围的分布，不再局限于球面
     const x = r * Math.sin(phi) * Math.cos(theta);
     const y = r * Math.cos(phi);
     const z = r * Math.sin(phi) * Math.sin(theta);
 
     // 创建气泡几何体，大小根据用户数据
-    const bubbleGeo = new THREE.SphereGeometry(size, 32, 32);
+    let bubbleGeo;
+    
+    // 移动端使用较低分辨率的几何体提高性能
+    if (isMobile) {
+      bubbleGeo = new THREE.SphereGeometry(size * mobileScale, 16, 16);
+    } else {
+      bubbleGeo = new THREE.SphereGeometry(size, 32, 32);
+    }
+    
     const bubbleMat = new THREE.MeshPhongMaterial({ 
       color: bubbles[i].color, 
       shininess: 80,
@@ -241,8 +410,8 @@ function createBubbles() {
     scene.add(mesh);
     bubbleMeshes.push(mesh);
     
-    // 添加文字标签
-    if (bubbles[i].name) {
+    // 添加文字标签，移动端减少标签
+    if (bubbles[i].name && (!isMobile || bubbles[i].isMain)) {
       createLabel(mesh, bubbles[i].name);
     }
   }
@@ -250,20 +419,35 @@ function createBubbles() {
 
 // 创建文本标签
 function createLabel(mesh, text) {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
   // 创建2D画布
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   canvas.width = 1536;
   canvas.height = 768;
   
-  // 设置文本样式
-  context.font = 'Bold 144px Arial';
+  // 设置文本样式 - 移动端字体更小
+  const fontSize = isMobile ? 120 : 144;
+  context.font = `Bold ${fontSize}px Arial`;
   context.fillStyle = 'white';
   context.textAlign = 'center';
+  
+  // 测量文本长度，调整画布和裁剪区域
+  const metrics = context.measureText(text);
+  const textWidth = metrics.width;
+  
+  // 添加文字阴影效果提高可读性
+  context.shadowColor = 'rgba(0,0,0,0.5)';
+  context.shadowBlur = 5;
+  context.shadowOffsetX = 2;
+  context.shadowOffsetY = 2;
+  
   context.fillText(text, 384, 192);
   
   // 创建纹理和精灵
   const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter; // 减少模糊
   const spriteMaterial = new THREE.SpriteMaterial({ 
     map: texture,
     transparent: true,
@@ -272,7 +456,8 @@ function createLabel(mesh, text) {
   
   const sprite = new THREE.Sprite(spriteMaterial);
   const scale = mesh.userData.size ? mesh.userData.size * 0.75 : 9;
-  sprite.scale.set(scale * 12, scale * 6, 1);
+  const mobileScale = isMobile ? 0.6 : 1; // 移动端标签尺寸缩小
+  sprite.scale.set(scale * 12 * mobileScale, scale * 6 * mobileScale, 1);
   
   // 设置标签位置，稍微偏移
   const position = mesh.position.clone();
@@ -290,83 +475,118 @@ function onWindowResize() {
 }
 
 function onPointerMove(event) {
+  // 获取触摸或鼠标位置
+  const clientX = event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : 0);
+  const clientY = event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : 0);
+  
   const mouse = new THREE.Vector2(
-    (event.clientX / window.innerWidth) * 2 - 1,
-    -(event.clientY / window.innerHeight) * 2 + 1
+    (clientX / window.innerWidth) * 2 - 1,
+    -(clientY / window.innerHeight) * 2 + 1
   );
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(bubbleMeshes);
   
-  // 重置所有节点的状态
-  bubbleMeshes.forEach(mesh => {
-    if (mesh.userData.originalScale) {
-      mesh.scale.set(1, 1, 1);
-    }
-  });
+  // 检测交互
+  const intersects = raycaster.intersectObjects(bubbleMeshes);
   
   if (intersects.length > 0) {
     const mesh = intersects[0].object;
-    
-    // 只有有名称的节点才显示提示
-    if (mesh.userData.name) {
-      // 放大选中的节点
-      if (!mesh.userData.originalScale) {
-        mesh.userData.originalScale = mesh.scale.clone();
-      }
-      mesh.scale.set(1.2, 1.2, 1.2);
-      
-      // 显示提示信息
-      tooltip.innerText = mesh.userData.name;
+    if (mesh.userData && mesh.userData.name) {
+      // 显示提示
       tooltip.style.display = 'block';
-      tooltip.style.left = (event.clientX + 15) + 'px';
-      tooltip.style.top = (event.clientY - 10) + 'px';
-      document.body.style.cursor = 'pointer';
+      tooltip.innerHTML = mesh.userData.name;
+      tooltip.style.left = clientX + 'px';
+      tooltip.style.top = clientY + 'px';
+      
+      // 稍微放大被悬停的节点以提供视觉反馈
+      if (!mesh.userData.isHovered) {
+        mesh.userData.originalScale = mesh.scale.x;
+        mesh.scale.multiplyScalar(1.2);
+        mesh.userData.isHovered = true;
+      }
     }
   } else {
+    // 隐藏提示
     tooltip.style.display = 'none';
-    document.body.style.cursor = '';
+    
+    // 恢复所有节点的原始大小
+    for (let i = 0; i < bubbleMeshes.length; i++) {
+      const mesh = bubbleMeshes[i];
+      if (mesh.userData && mesh.userData.isHovered) {
+        mesh.scale.setScalar(mesh.userData.originalScale || 1);
+        mesh.userData.isHovered = false;
+      }
+    }
   }
 }
 
+// 添加点击/触摸事件处理
 function onPointerDown(event) {
-  // 检测点击的节点
+  // 防止多次点击
+  if (event.isPrimary === false) return;
+  
+  // 关闭已打开的面板（点击其他区域时）
+  const infoPanel = document.getElementById('category-info');
+  if (infoPanel.style.display === 'block') {
+    // 检查点击是否在面板区域外
+    const rect = infoPanel.getBoundingClientRect();
+    const clickOutside = 
+      event.clientX < rect.left || 
+      event.clientX > rect.right || 
+      event.clientY < rect.top || 
+      event.clientY > rect.bottom;
+    
+    if (clickOutside) {
+      infoPanel.style.display = 'none';
+    }
+  }
+  
+  const clientX = event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : 0);
+  const clientY = event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : 0);
+  
   const mouse = new THREE.Vector2(
-    (event.clientX / window.innerWidth) * 2 - 1,
-    -(event.clientY / window.innerHeight) * 2 + 1
+    (clientX / window.innerWidth) * 2 - 1,
+    -(clientY / window.innerHeight) * 2 + 1
   );
+  
   const raycaster = new THREE.Raycaster();
   raycaster.setFromCamera(mouse, camera);
+  
   const intersects = raycaster.intersectObjects(bubbleMeshes);
   
   if (intersects.length > 0) {
     const mesh = intersects[0].object;
-    
-    // 只处理有名称的节点
-    if (mesh.userData.name) {
-      // 聚焦到选中的节点
+    if (mesh.userData && mesh.userData.name) {
       focusOnNode(mesh);
+      showCategoryInfo(mesh.userData.name);
       
-      // 判断节点层级
-      if (mesh.userData.isMain) {
-        // 一级节点：显示子分类信息
-        showCategoryInfo(mesh.userData.name);
-      } else if (mesh.userData.parent) {
-        // 获取父节点
-        const parentNode = categories.find(cat => cat.name === mesh.userData.parent);
-        
-        // 如果父节点是主节点，则是二级节点
-        if (parentNode && parentNode.isMain) {
-          // 二级节点：打开链接
-          console.log('打开二级节点链接:', mesh.userData.name);
-          window.open('https://www.yuque.com/jtostring/qiwsg9/wi0x1wqmn9qagvpq?singleDoc#030f4600', '_blank');
-          return;
-        }
-        
-        // 如果是三级节点或其他层级节点，不做特殊处理
-        // 可以在这里添加其他层级节点的处理逻辑
+      // 触摸设备上更新提示
+      if ('ontouchstart' in window) {
+        document.getElementById('touch-instructions').style.opacity = 0;
       }
     }
+  }
+}
+
+// 隐藏加载指示器函数
+function hideLoading() {
+  const loading = document.getElementById('loading');
+  loading.style.opacity = 0;
+  loading.style.transition = 'opacity 0.5s ease';
+  
+  setTimeout(() => {
+    loading.style.display = 'none';
+  }, 500);
+  
+  // 显示触摸指引
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    const touchInstructions = document.getElementById('touch-instructions');
+    touchInstructions.style.opacity = 1;
+    
+    // 5秒后淡出
+    setTimeout(() => {
+      touchInstructions.style.opacity = 0.5;
+    }, 5000);
   }
 }
 
@@ -430,7 +650,10 @@ function resetView() {
 
 // 创建粒子系统作为背景
 function createParticles() {
-  const particleCount = 200;
+  // 移动端减少粒子数量，提高性能
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const particleCount = isMobile ? 100 : 200;
+  
   const particles = new THREE.BufferGeometry();
   const positions = new Float32Array(particleCount * 3);
   
@@ -543,7 +766,14 @@ function createOnlineCounter() {
   infoPanel.style.zIndex = '100';
   infoPanel.style.display = 'none';
   infoPanel.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+  infoPanel.style.transition = 'all 0.3s ease';
   document.body.appendChild(infoPanel);
+  
+  // 移动端调整底部提示
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    counterDiv.style.fontSize = '1.1em';
+    counterDiv.style.bottom = '50px';
+  }
 }
 
 // 显示分类信息
@@ -638,11 +868,156 @@ function showCategoryInfo(categoryName) {
   infoPanel.appendChild(closeBtn);
 }
 
+// 添加双指触摸支持
+let touchStartDistance = 0;
+let touchStartScale = 1;
+let isMultiTouch = false;
+
+function handleTouchStart(event) {
+  if (event.touches.length >= 2) {
+    isMultiTouch = true;
+    
+    // 计算两指之间的距离
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
+    touchStartDistance = Math.sqrt(dx * dx + dy * dy);
+    
+    // 记录当前缩放级别
+    touchStartScale = camera.position.distanceTo(controls.target);
+    
+    // 禁用OrbitControls，避免冲突
+    controls.enabled = false;
+    
+    // 防止页面滚动
+    event.preventDefault();
+  } else {
+    isMultiTouch = false;
+    controls.enabled = true;
+  }
+}
+
+function handleTouchMove(event) {
+  if (isMultiTouch && event.touches.length >= 2) {
+    // 计算当前两指距离
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
+    const touchDistance = Math.sqrt(dx * dx + dy * dy);
+    
+    // 计算缩放比例
+    const scale = touchStartDistance / touchDistance;
+    
+    // 设置新的相机位置
+    const newDistance = touchStartScale * scale;
+    
+    // 确保缩放在最小和最大范围内
+    if (newDistance >= controls.minDistance && newDistance <= controls.maxDistance) {
+      const dir = camera.position.clone().sub(controls.target).normalize();
+      camera.position.copy(controls.target.clone().add(dir.multiplyScalar(newDistance)));
+    }
+    
+    // 防止页面滚动
+    event.preventDefault();
+  }
+}
+
+function handleTouchEnd(event) {
+  if (event.touches.length < 2) {
+    isMultiTouch = false;
+    controls.enabled = true;
+  }
+}
+
+// 修改为使用帧计数器而不是随机函数来控制移动端渲染频率
+let frameCount = 0;
+let perfMonitor;
+
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
+  
+  // 性能优化 - 移动端降低更新频率，但保持连续性
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  frameCount++;
+  
+  // 更新性能监视器 (如果存在)
+  if (perfMonitor) perfMonitor.update();
+  
+  // 根据设备性能自适应渲染
+  if (!isMobile || frameCount % 2 === 0) { // 移动端每两帧渲染一次
+    controls.update();
+    renderer.render(scene, camera);
+  }
 }
+
+// 初始化时创建性能监视器
+window.addEventListener('DOMContentLoaded', () => {
+  // 初始化场景
+  init();
+  
+  // 给一点额外的时间加载资源
+  setTimeout(() => {
+    if (document.getElementById('loading')) {
+      hideLoading();
+    }
+  }, 1000);
+});
+
+// 添加页面卸载事件处理，防止内存泄漏
+function cleanUp() {
+  // 删除事件监听器
+  window.removeEventListener('resize', onWindowResize);
+  renderer.domElement.removeEventListener('pointermove', onPointerMove);
+  renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+  
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  if (isMobile) {
+    document.removeEventListener('touchstart', handleTouchStart);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+  }
+  
+  // 释放THREE.js资源
+  renderer.dispose();
+  
+  // 释放几何体和材质
+  for (let i = 0; i < bubbleMeshes.length; i++) {
+    bubbleMeshes[i].geometry.dispose();
+    bubbleMeshes[i].material.dispose();
+  }
+  
+  // 释放场景中的所有对象
+  function disposeNode(node) {
+    if (node.geometry) node.geometry.dispose();
+    if (node.material) {
+      if (Array.isArray(node.material)) {
+        node.material.forEach(material => material.dispose());
+      } else {
+        node.material.dispose();
+      }
+    }
+  }
+  
+  scene.traverse(disposeNode);
+  
+  scene = null;
+  camera = null;
+  controls = null;
+  bubbleMeshes = [];
+}
+
+// 监听页面卸载
+window.addEventListener('beforeunload', cleanUp);
+
+// 移动设备上，当页面进入后台时，暂停渲染以节省资源
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    // 页面不可见时，暂停动画
+    controls.autoRotate = false;
+  } else {
+    // 页面可见时，恢复动画
+    controls.autoRotate = true;
+  }
+});
 </script>
 </body>
 </html>
