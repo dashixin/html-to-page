@@ -36,6 +36,28 @@
     }
     .reset-btn:hover { opacity: 1; }
     
+    /* 热门文章按钮样式 */
+    .article-btn {
+      position: fixed;
+      right: 20px; top: 65px;
+      z-index: 100;
+      background: #ff7043;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 0.9em;
+      cursor: pointer;
+      opacity: 0.85;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    .article-btn:hover { 
+      opacity: 1; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
     /* 加载指示器样式 */
     .loading {
       position: fixed;
@@ -101,6 +123,16 @@
         padding: 6px 12px;
         font-size: 0.8em;
       }
+      .article-btn {
+        right: 15px;
+        top: 55px;
+        padding: 6px 12px;
+        font-size: 0.8em;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .loading-spinner {
         width: 40px; height: 40px;
         border-width: 4px;
@@ -127,6 +159,9 @@
 </div>
 <div id="container"></div>
 <button class="reset-btn" onclick="resetView()">重置视角</button>
+<a href="https://www.yuque.com/jtostring/qiwsg9/wi0x1wqmn9qagvpq?singleDoc#030f4600" target="_blank">
+  <button class="article-btn">技术小馆热门文章</button>
+</a>
 <div class="tooltip" id="tooltip"></div>
 <div class="touch-instructions" id="touch-instructions">单指拖动旋转 · 双指缩放</div>
 
